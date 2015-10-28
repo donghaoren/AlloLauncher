@@ -41,7 +41,7 @@ Listen("presets.list", function(presets) {
         var preset_action_divs = d3.select("#preset-detail-container .preset-actions").selectAll("a").data(current_preset.actions);
         preset_action_divs.enter().append("a");
         preset_action_divs.exit().remove();
-        preset_action_divs.attr("href", "#").classed("list-group-item", true).text(function(d) {
+        preset_action_divs.attr("href", "#").classed("list-group-item", true).classed("disabled", false).text(function(d) {
             return d.name;
         }).on("click", function(d) {
             if(d.confirm) {
@@ -62,7 +62,7 @@ Listen("presets.list", function(presets) {
         var preset_command_divs = d3.select("#preset-detail-container .preset-commands").selectAll("a").data(current_preset.commands);
         preset_command_divs.enter().append("a");
         preset_command_divs.exit().remove();
-        preset_command_divs.attr("href", "#").classed("list-group-item", true).text(function(d) {
+        preset_command_divs.attr("href", "#").classed("list-group-item", true).classed("disabled", false).text(function(d) {
             return d.name;
         }).on("click", function(d) {
             if(d.confirm) {
