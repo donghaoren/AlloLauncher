@@ -157,10 +157,28 @@ function EnsureProcessListItem(uuid, info) {
     }
 }
 
+var scheduled_renders = new Set();
+var scheduled_render_timer = null;
+function ScheduleRender_Perform() {
+    for(var item of scheduled_renders) {
+        item.render();
+    }
+    scheduled_render_timer = null;
+};
+function ScheduleRender(item) {
+    scheduled_renders.add(item);
+    if(!scheduled_render_timer) {
+        scheduled_render_timer = setTimeout(ScheduleRender_Perform, 0);
+    }
+};
+
 Listen("launcher.log", function(uuid, info, type, line) {
     var item = EnsureProcessListItem(uuid, info);
     item.recent_log.push([type, line]);
-    item.render();
+    if(item.recent_log.length - 100 > 0) {
+        item.recent_log.splice(0, item.recent_log.length - 100);
+    }
+    ScheduleRender(item);
     if(type == "terminated") {
         item.remove();
     }
