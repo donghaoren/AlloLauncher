@@ -163,12 +163,13 @@ function ScheduleRender_Perform() {
     for(var item of scheduled_renders) {
         item.render();
     }
+    scheduled_renders.clear();
     scheduled_render_timer = null;
 };
 function ScheduleRender(item) {
     scheduled_renders.add(item);
     if(!scheduled_render_timer) {
-        scheduled_render_timer = setTimeout(ScheduleRender_Perform, 0);
+        scheduled_render_timer = setTimeout(ScheduleRender_Perform, 10);
     }
 };
 
