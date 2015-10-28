@@ -112,7 +112,8 @@ function EnsureProcessListItem(uuid, info) {
                     border: "none",
                     margin: "0px",
                     padding: "1px 5px",
-                    "border-radius": "0"
+                    "border-radius": "0",
+                    "font-size": "10px"
                 });
                 sel.style("border-left", function(d) {
                     var color = "transparent";
@@ -140,24 +141,24 @@ function EnsureProcessListItem(uuid, info) {
         launched_processes_infos.push(item);
         item.element = d3.select("#launched-processes-container").insert("div", ":first-child");
         item.element.classed("panel panel-success", true);
-        var heading = item.element.append("div").classed("panel-heading clearfix", true).style("line-height", "30px").style("font-size", "18px");
+        var heading = item.element.append("div").classed("panel-heading clearfix", true).style("line-height", "20px").style("font-size", "14px");
         heading.append("b").text(info.host);
         heading.append("span").text(": ");
-        heading.append("b").text("ID = " + info.id);
-        heading.append("span").text(" ");
-        heading.append("span").text(info.command);
+        heading.append("span").text("ID = " + info.id + ", uuid = " + uuid);
         var heading_buttons = heading.append("span").style("float", "right");
-        heading_buttons.append("span").classed("btn btn-sm btn-danger", true).text("Kill").on("click", function() {
+        heading_buttons.append("span").classed("btn btn-xs btn-danger", true).text("Kill This").on("click", function() {
             Emit("launcher.kill_by_uuid", uuid);
         });
         heading_buttons.append("span").text(" ");
-        heading_buttons.append("span").classed("btn btn-sm btn-danger", true).text("Kill Same ID").on("click", function() {
+        heading_buttons.append("span").classed("btn btn-xs btn-danger", true).text("Kill Same ID").on("click", function() {
             Emit("launcher.kill_by_id", info.id);
         });
 
         var body = item.element.append("div").classed("panel-body", true);
         item.log_list = body.append("div").classed("well", true).style({
-            "max-height": "300px",
+            "max-height": "150px",
+            "padding": "5px",
+            "margin": "0",
             "overflow": "scroll"
         });
         return item;

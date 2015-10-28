@@ -92,8 +92,7 @@ LaunchingController.prototype.launch = function(id, host, command) {
         host: host,
         info: {
             id: id,
-            host: host,
-            command: command
+            host: host
         },
         command: command,
         uuid: GenerateProcessUUID()
@@ -140,8 +139,7 @@ LaunchingController.prototype.list = function() {
             command: process.command,
             info: {
                 id: process.id,
-                host: process.host,
-                command: process.command
+                host: process.host
             },
             uuid: process.uuid,
             recent_log: process.recent_log.slice(-20)
