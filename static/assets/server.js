@@ -178,7 +178,7 @@ function ScheduleRender_Perform() {
 function ScheduleRender(item) {
     scheduled_renders.add(item);
     if(!scheduled_render_timer) {
-        scheduled_render_timer = setTimeout(ScheduleRender_Perform, 10);
+        scheduled_render_timer = setTimeout(ScheduleRender_Perform, 100);
     }
 };
 
