@@ -13,8 +13,11 @@ function UpdatePresets() {
         for(var f of files) {
             if(f.match(/\.yaml$/i)) {
                 var fn = "./presets/" + f;
-                var content = require("js-yaml").load(require("fs").readFileSync(fn, "utf-8"));
-                presets.push(content);
+                try {
+                    var content = require("js-yaml").load(require("fs").readFileSync(fn, "utf-8"));
+                    presets.push(content);
+                } catch(e) {
+                }
             }
         }
 

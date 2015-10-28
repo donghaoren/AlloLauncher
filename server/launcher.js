@@ -79,6 +79,12 @@ var GenerateProcessUUID = function() {
 LaunchingController.prototype.launch = function(id, host, command) {
     var self = this;
     var hostinfo = this.config.hosts[host];
+    if(require("util").isArray(hostinfo)) {
+        hostinfo.forEach(function(h) {
+            self.launch(id, h, command);
+        });
+        return;
+    }
     var cmdargs = hostinfo.translateCommand(command);
     var processinfo = {
         recent_log: [],
