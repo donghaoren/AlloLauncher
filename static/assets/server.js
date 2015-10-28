@@ -140,7 +140,7 @@ function EnsureProcessListItem(uuid, info) {
         });
         heading_buttons.append("span").text(" ");
         heading_buttons.append("span").classed("btn btn-sm btn-danger", true).text("Kill Same ID").on("click", function() {
-            Emit("launcher.kill_by_id", uuid);
+            Emit("launcher.kill_by_id", info.id);
         });
 
         var body = item.element.append("div").classed("panel-body", true);
