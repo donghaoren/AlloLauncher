@@ -26,6 +26,7 @@ var Listen = function(path, handler) {
 var current_preset = null;
 
 d3.select("#btn-back").on("click", function() {
+    UpdateLaunchedList();
     $("#preset-detail-container").hide();
     $("#presets-container").show();
 });
@@ -39,6 +40,7 @@ Listen("presets.list", function(presets) {
     preset_divs.append("h4").classed("list-group-item-heading", true).text(function(d) { return d.name; });
     preset_divs.append("p").classed("list-group-item-text", true).text(function(d) { return d.description; });
     preset_divs.on("click", function(d) {
+        UpdateLaunchedList();
         current_preset = d;
         if(!current_preset.actions) current_preset.actions = [];
         if(!current_preset.commands) current_preset.commands = [];
@@ -92,6 +94,20 @@ Listen("presets.list", function(presets) {
                     Emit("launcher.send_command_by_id", m, d.command);
                 });
             }
+        });
+
+        var dropdown_targets_lis = d3.select("#dropdown-targets").selectAll("li").data(current_preset.target_machines);
+        dropdown_targets_lis.enter().append("li").append("a");
+        dropdown_targets_lis.exit().remove();
+        d3.select("#btn-send-command").on("click", null);
+        d3.select("#dropdown-targets-selected").text("Select...").attr("data-target-machine", "");
+        dropdown_targets_lis.select("a").text(function(d) { return d.name; }).on("click", function(d) {
+            d3.select("#dropdown-targets-selected").text(d.name).attr("data-target-machine", d.id);
+            d3.select("#btn-send-command").on("click", function() {
+                var id = d.id;
+                var command = d3.select("#text-send-command").property("value");
+                Emit("launcher.send_command_by_id", id, command);
+            });
         });
     });
 });
@@ -196,6 +212,9 @@ Listen("launcher.log", function(uuid, info, type, line) {
 });
 
 Listen("launcher.list", function(processes) {
+    launched_processes_infos = [];
+    scheduled_renders = new Set();
+    d3.select("#launched-processes-container").selectAll("div").remove();
     processes.forEach(function(process) {
         var item = EnsureProcessListItem(process.uuid, process.info);
         item.recent_log = process.recent_log;
@@ -203,6 +222,9 @@ Listen("launcher.list", function(processes) {
     });
 });
 
+function UpdateLaunchedList() {
+    Emit("launcher.scan");
+}
 
 // Monitor connection status.
 
@@ -213,7 +235,7 @@ function SetConnectionStatus(text, color) {
 socket.on("connect", function() {
     SetConnectionStatus("Connected.", "#0F0");
     Emit("presets.scan");
-    Emit("launcher.scan");
+    UpdateLaunchedList();
 });
 socket.on("connect_error", function() {
     SetConnectionStatus("Connection error.", "#F00");
