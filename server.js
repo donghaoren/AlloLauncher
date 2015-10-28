@@ -40,26 +40,26 @@ var command_to_arg_array = function(command) {
 };
 
 for(var host in config.hosts) {
-    var hostinfo = config.hosts[host];
-    if(hostinfo.direct) {
-        hostinfo.translateCommand = function(command) {
-            command = command_to_arg_array(command);
-            return command;
-        };
-    }
-    if(hostinfo.command) {
-        hostinfo.translateCommand = function(command) {
-            command = command_to_arg_array(command);
-            var result = [];
-            for(var arg of hostinfo.command) {
-                if(arg == "{ESCAPED_COMMAND}") result.push(shell_quote(command));
-                else if(arg == "{COMMAND}") result = result.concat(command);
-                else result.push(arg);
-            }
-            return result;
-        };
-    }
-    console.log(hostinfo.translateCommand("ls -lh"));
+    (function(hostinfo) {
+        if(hostinfo.direct) {
+            hostinfo.translateCommand = function(command) {
+                command = command_to_arg_array(command);
+                return command;
+            };
+        }
+        if(hostinfo.command) {
+            hostinfo.translateCommand = function(command) {
+                command = command_to_arg_array(command);
+                var result = [];
+                for(var arg of hostinfo.command) {
+                    if(arg == "{ESCAPED_COMMAND}") result.push(shell_quote(command));
+                    else if(arg == "{COMMAND}") result = result.concat(command);
+                    else result.push(arg);
+                }
+                return result;
+            };
+        }
+    })(config.hosts[host]);
 }
 
 launcher.on("log", (uuid, info, type, line) => {
