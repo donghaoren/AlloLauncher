@@ -31,6 +31,9 @@ Listen("presets.list", function(presets) {
     preset_divs.append("p").classed("list-group-item-text", true).text(function(d) { return d.description; });
     preset_divs.on("click", function(d) {
         current_preset = d;
+        if(!current_preset.actions) current_preset.actions = [];
+        if(!current_preset.commands) current_preset.commands = [];
+
         $("#preset-detail-container").show();
         $("#presets-container").hide();
         $("#preset-detail-container .preset-name").text(current_preset.name);
