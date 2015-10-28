@@ -42,11 +42,17 @@ function HTTPServer(config) {
             }
         });
     });
+
+    this.current_message_queue = [];
+    setInterval(function() {
+        for(var item of self.sockets) {
+            item.emit("ms", self.current_message_queue);
+        }
+        self.current_message_queue = [];
+    }, 200);
 }
 HTTPServer.prototype.broadcast = function(path) {
-    for(var item of this.sockets) {
-        item.emit("m", [ path, Array.prototype.slice.call(arguments, 1) ]);
-    }
+    this.current_message_queue.push([ path, Array.prototype.slice.call(arguments, 1) ]);
 };
 HTTPServer.prototype.on = function(event, handler) {
     this.handlers[event] = handler;

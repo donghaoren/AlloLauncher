@@ -10,6 +10,15 @@ socket.on("m", function(msg) {
         handlers[path].apply(null, args);
     }
 });
+socket.on("ms", function(msgs) {
+    for(var msg of msgs) {
+        var path = msg[0];
+        var args = msg[1];
+        if(handlers[path]) {
+            handlers[path].apply(null, args);
+        }
+    }
+});
 var Listen = function(path, handler) {
     handlers[path] = handler;
 };
@@ -176,8 +185,8 @@ function ScheduleRender(item) {
 Listen("launcher.log", function(uuid, info, type, line) {
     var item = EnsureProcessListItem(uuid, info);
     item.recent_log.push([type, line]);
-    if(item.recent_log.length - 100 > 0) {
-        item.recent_log.splice(0, item.recent_log.length - 100);
+    if(item.recent_log.length - 20 > 0) {
+        item.recent_log.splice(0, item.recent_log.length - 20);
     }
     ScheduleRender(item);
     if(type == "terminated") {

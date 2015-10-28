@@ -103,7 +103,7 @@ LaunchingController.prototype.launch = function(id, host, command) {
             processinfo.recent_log.push([ info, line ]);
             // Limit the number of lines stored.
             if(processinfo.recent_log.length > 1000) {
-                processinfo.recent_log.splice(0, processinfo.recent_log.length - 100);
+                processinfo.recent_log.splice(0, processinfo.recent_log.length - 1000);
             }
             self.raise("log", processinfo.uuid, processinfo.info, info, line);
             if(info == "terminated") {
@@ -144,7 +144,7 @@ LaunchingController.prototype.list = function() {
                 command: process.command
             },
             uuid: process.uuid,
-            recent_log: process.recent_log.slice(-100)
+            recent_log: process.recent_log.slice(-20)
         };
     });
 };
