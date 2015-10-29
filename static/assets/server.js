@@ -152,6 +152,7 @@ function EnsureProcessListItem(uuid, info) {
             remove: function() {
                 item.element.classed("panel-success", false);
                 item.element.classed("panel-default", true).style("opacity", 0.5);
+                $(body.node()).slideUp();
             }
         }
         launched_processes_infos.push(item);
@@ -162,16 +163,21 @@ function EnsureProcessListItem(uuid, info) {
         heading.append("span").text(": ");
         heading.append("span").text("ID = " + info.id + ", uuid = " + uuid);
         var heading_buttons = heading.append("span").style("float", "right");
+        heading.on("click", function() {
+            $(body.node()).slideToggle();
+        });
         heading_buttons.append("span").classed("btn btn-xs btn-danger", true).text("Kill This").on("click", function() {
             Emit("launcher.kill_by_uuid", uuid);
+            d3.event.stopPropagation();
         });
         heading_buttons.append("span").text(" ");
         heading_buttons.append("span").classed("btn btn-xs btn-danger", true).text("Kill Same ID").on("click", function() {
             Emit("launcher.kill_by_id", info.id);
+            d3.event.stopPropagation();
         });
 
-        var body = item.element.append("div").classed("panel-body", true);
-        item.log_list = body.append("div").classed("well", true).style({
+        var body = item.element.append("div").classed("panel-body", true).style("padding", "0px").style("display", "none");
+        item.log_list = body.append("div").classed("", true).style({
             "max-height": "150px",
             "padding": "5px",
             "margin": "0",
