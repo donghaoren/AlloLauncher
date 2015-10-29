@@ -157,8 +157,12 @@ function EnsureProcessListItem(uuid, info) {
         }
         launched_processes_infos.push(item);
         item.element = d3.select("#launched-processes-container").insert("div", ":first-child");
+        item.element.style("margin-bottom", "5px");
         item.element.classed("panel panel-success", true);
-        var heading = item.element.append("div").classed("panel-heading clearfix", true).style("line-height", "20px").style("font-size", "14px");
+        var heading = item.element.append("div").classed("panel-heading clearfix", true)
+            .style("line-height", "20px")
+            .style("padding", "5px 10px")
+            .style("font-size", "14px");
         heading.append("b").text(info.host);
         heading.append("span").text(": ");
         heading.append("span").text("ID = " + info.id + ", uuid = " + uuid);
