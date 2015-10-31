@@ -2,7 +2,6 @@ body {
     -webkit-user-select: none;
     cursor: default;
     overflow: hidden;
-    position: fixed;
 }
 
 select { cursor: pointer; }

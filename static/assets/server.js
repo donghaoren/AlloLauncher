@@ -48,7 +48,27 @@ Listen("presets.list", function(presets) {
         $("#preset-detail-container").show();
         $("#presets-container").hide();
         $("#preset-detail-container .preset-name").text(current_preset.name);
-        $("#preset-detail-container .preset-details").html(marked(current_preset.markdown));
+        var processed_markdown = current_preset.markdown;
+        processed_markdown = processed_markdown.replace(/@\{command:([^\|]+)\|([^\}]+)\}/ig, function(all, cmd, text) {
+            return '<button class="btn btn-sm btn-default" data-command="' + cmd + '">' + text + '</button>';
+        });
+        processed_markdown = processed_markdown.replace(/@\{action:([^\|]+)\|([^\}]+)\}/ig, function(all, cmd, text) {
+            return '<button class="btn btn-sm btn-primary" data-action="' + cmd + '">' + text + '</button>';
+        });
+        $("#preset-detail-container .preset-details").html(marked(processed_markdown));
+        $("#preset-detail-container .preset-details button").css("margin-top", "2px");
+        $("#preset-detail-container .preset-details [data-command]").each(function() {
+            var cmd = $(this).attr("data-command");
+            $(this).click(function() {
+                sendCommand(cmd);
+            });
+        });
+        $("#preset-detail-container .preset-details [data-action]").each(function() {
+            var act = $(this).attr("data-action");
+            $(this).click(function() {
+                sendAction(act);
+            });
+        });
         var preset_action_divs = d3.select("#preset-detail-container .preset-actions").selectAll("a").data(current_preset.actions);
         preset_action_divs.enter().append("a");
         preset_action_divs.exit().remove();
@@ -95,6 +115,42 @@ Listen("presets.list", function(presets) {
                 });
             }
         });
+
+        var sendAction = function(name) {
+            var filtered = current_preset.actions.filter(function(d) {
+                return d.name == name;
+            });
+            var d;
+            if(filtered.length == 1) d = filtered[0];
+            else return;
+            d.actions.forEach(function(action) {
+                if(action.launcher) {
+                    action.launcher.forEach(function(launcher_item) {
+                        Emit("launcher.launch", launcher_item.id, launcher_item.host, launcher_item.command);
+                    });
+                }
+            });
+        };
+        var sendCommand = function(name) {
+            var filtered = current_preset.commands.filter(function(d) {
+                return d.name == name;
+            });
+            var d;
+            if(filtered.length == 1) d = filtered[0];
+            else return;
+            var target_machines = d.target_machines;
+            if(typeof(target_machines) == "string") target_machines = [ target_machines ];
+            if(d.action == "kill") {
+                target_machines.forEach(function(m) {
+                    Emit("launcher.kill_by_id", m);
+                });
+            }
+            if(d.command) {
+                target_machines.forEach(function(m) {
+                    Emit("launcher.send_command_by_id", m, d.command);
+                });
+            }
+        };
 
         var dropdown_targets_lis = d3.select("#dropdown-targets").selectAll("li").data(current_preset.target_machines);
         dropdown_targets_lis.enter().append("li").append("a");
