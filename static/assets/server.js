@@ -78,16 +78,7 @@ Listen("presets.list", function(presets) {
             if(d.confirm) {
                 if(!confirm("Do you want to perform this action?")) return;
             }
-            if(d.once) {
-                d3.select(this).classed("disabled", true).on("click", null);
-            }
-            d.actions.forEach(function(action) {
-                if(action.launcher) {
-                    action.launcher.forEach(function(launcher_item) {
-                        Emit("launcher.launch", launcher_item.id, launcher_item.host, launcher_item.command);
-                    });
-                }
-            });
+            sendAction(d.name);
         });
 
         var preset_command_divs = d3.select("#preset-detail-container .preset-commands").selectAll("a").data(current_preset.commands);
@@ -99,21 +90,7 @@ Listen("presets.list", function(presets) {
             if(d.confirm) {
                 if(!confirm("Do you want to issue this command?")) return;
             }
-            if(d.once) {
-                d3.select(this).classed("disabled", true).on("click", null);
-            }
-            var target_machines = d.target_machines;
-            if(typeof(target_machines) == "string") target_machines = [ target_machines ];
-            if(d.action == "kill") {
-                target_machines.forEach(function(m) {
-                    Emit("launcher.kill_by_id", m);
-                });
-            }
-            if(d.command) {
-                target_machines.forEach(function(m) {
-                    Emit("launcher.send_command_by_id", m, d.command);
-                });
-            }
+            sendCommand(d.name);
         });
 
         var sendAction = function(name) {
@@ -148,6 +125,13 @@ Listen("presets.list", function(presets) {
             if(d.command) {
                 target_machines.forEach(function(m) {
                     Emit("launcher.send_command_by_id", m, d.command);
+                });
+            }
+            if(d.commands) {
+                d.commands.forEach(function(command) {
+                    target_machines.forEach(function(m) {
+                        Emit("launcher.send_command_by_id", m, command);
+                    });
                 });
             }
         };
