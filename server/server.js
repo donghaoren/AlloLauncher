@@ -45,8 +45,10 @@ function HTTPServer(config) {
 
     this.current_message_queue = [];
     setInterval(function() {
-        for(var item of self.sockets) {
-            item.emit("ms", self.current_message_queue);
+        if(self.current_message_queue.length > 0) {
+            for(var item of self.sockets) {
+                item.emit("ms", self.current_message_queue);
+            }
         }
         self.current_message_queue = [];
     }, 200);
