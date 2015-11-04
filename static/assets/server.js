@@ -31,6 +31,10 @@ d3.select("#btn-back").on("click", function() {
     $("#presets-container").show();
 });
 
+function RemoveTerminalCommands(string) {
+    return string.replace(/\x1b\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K|G|J]/g, '');
+};
+
 Listen("presets.list", function(presets) {
     d3.select("#presets").selectAll("a").remove();
     var preset_divs = d3.select("#presets").selectAll("a").data(presets);
@@ -186,11 +190,11 @@ function EnsureProcessListItem(uuid, info) {
                     return "none";
                 });
                 sel.text(function(d) {
-                    return d[1];
+                    return RemoveTerminalCommands(d[1]);
                 });
                 if(item.recent_log.length > 0) {
                     var lastlog = item.recent_log[item.recent_log.length - 1];
-                    span_lastlog.text(lastlog[1]);
+                    span_lastlog.text(RemoveTerminalCommands(lastlog[1]));
                 }
                 $(item.log_list.node()).scrollTop(item.log_list.node().scrollHeight);
             },
