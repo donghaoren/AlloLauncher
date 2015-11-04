@@ -171,7 +171,7 @@ function EnsureProcessListItem(uuid, info) {
                     "border-radius": "0",
                     "font-size": "10px"
                 });
-                sel.style("border-left", function(d) {
+                var border_left_style = function(d) {
                     var color = "transparent";
                     if(d[0] == "launched") color = "green";
                     if(d[0] == "error") color = "red";
@@ -179,7 +179,8 @@ function EnsureProcessListItem(uuid, info) {
                     if(d[0] == "command") color = "green";
                     if(d[0] == "terminated") color = "red";
                     return "4px solid " + color;
-                });
+                };
+                sel.style("border-left", border_left_style);
                 sel.style("background", function(d) {
                     if(d[0] == "command") return "rgba(0, 255, 0, 0.04)";
                     return "none";
@@ -187,6 +188,10 @@ function EnsureProcessListItem(uuid, info) {
                 sel.text(function(d) {
                     return d[1];
                 });
+                if(item.recent_log.length > 0) {
+                    var lastlog = item.recent_log[item.recent_log.length - 1];
+                    span_lastlog.text(lastlog[1]);
+                }
                 $(item.log_list.node()).scrollTop(item.log_list.node().scrollHeight);
             },
             remove: function() {
@@ -205,7 +210,11 @@ function EnsureProcessListItem(uuid, info) {
             .style("font-size", "14px");
         heading.append("b").text(info.host);
         heading.append("span").text(": ");
-        heading.append("span").text("ID = " + info.id + ", uuid = " + uuid);
+        heading.append("b").text(info.id);
+        var span_lastlog = heading.append("span").text("").style({
+            "margin-left": "5px",
+            "font-size": "12px"
+        });
         var heading_buttons = heading.append("span").style("float", "right");
         heading.on("click", function() {
             $(body.node()).slideToggle();
